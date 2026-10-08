@@ -4,7 +4,7 @@ import 'package:court_click/core/routes/app_routes.dart';
 import 'package:court_click/core/theme/app_theme.dart';
 import 'package:court_click/data/datasources/movie_remote_data_source.dart';
 import 'package:court_click/data/repositories/home_repository.dart';
-import 'package:court_click/presentation/screens/bloc/home_bloc.dart';
+import 'package:court_click/presentation/screens/bloc/home/home_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

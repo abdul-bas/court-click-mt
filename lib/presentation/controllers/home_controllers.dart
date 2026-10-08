@@ -1,5 +1,5 @@
 import 'package:court_click/data/model/movie_model.dart';
-import 'package:court_click/presentation/screens/bloc/home_states.dart';
+import 'package:court_click/presentation/screens/bloc/home/home_states.dart';
 import 'package:flutter/material.dart';
 
 class HomeController extends ChangeNotifier {
