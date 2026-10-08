@@ -1,8 +1,8 @@
 import 'package:court_click/presentation/controllers/home_controllers.dart';
-import 'package:court_click/presentation/screens/bloc/home/home_bloc.dart';
-import 'package:court_click/presentation/screens/bloc/home/home_events.dart';
-import 'package:court_click/presentation/screens/bloc/home/home_states.dart';
+import 'package:court_click/presentation/bloc/home/home_bloc.dart';
+import 'package:court_click/presentation/bloc/home/home_states.dart';
 import 'package:court_click/core/utils/home_state_handler.dart';
+import 'package:court_click/presentation/controllers/navigation_controller.dart';
 import 'package:court_click/presentation/screens/home_screen/widgets/bottom_bavigation.dart';
 import 'package:court_click/presentation/screens/home_screen/widgets/continue_watching_row.dart';
 import 'package:court_click/presentation/screens/home_screen/widgets/hero_carousel.dart';
@@ -11,103 +11,53 @@ import 'package:court_click/presentation/screens/home_screen/widgets/movie_row.d
 import 'package:court_click/presentation/screens/home_screen/widgets/previews_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({
+    super.key,
+    required this.navigationController,
+    required this.homeController,
+  });
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  final HomeController _controller = HomeController();
-  @override
-  void initState() {
-    super.initState();
-
-    context.read<HomeBloc>()
-      ..add(NowPlayingGetEvent())
-      ..add(PopularGetEvent())
-      ..add(TrendingGetEvent())
-      ..add(Top10GetEvent())
-      ..add(MyListGetEvent())
-      ..add(AfricanMoviesGetEvent())
-      ..add(HollywoodGetEvent())
-      ..add(NetflixOriginalsGetEvent())
-      ..add(WatchAgainGetEvent())
-      ..add(NewReleasesGetEvent())
-      ..add(TvThrillersGetEvent())
-      ..add(UsTvShowsGetEvent());
-  }
+  final NavigationController navigationController;
+  final HomeController homeController;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: ListenableBuilder(
-        listenable: _controller,
+        listenable: homeController,
         builder: (context, child) {
-          return BlocListener<HomeBloc, HomeState>(
-            listener: (context, state) {
-              homeStateHandler(state, context);
-              _controller.onState(state);
-            },
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                HeroCarousel(movies: _controller.nowPlayingMovies),
-                const HomeLabelWidget('Previews'),
-                PreviewsRow(movies: _controller.nowPlayingMovies),
-                const HomeLabelWidget('Continue Watching for Onyeka'),
-                ContinueWatchingRow(
-                  movies: _controller.nowPlayingMovies.reversed.toList(),
-                ),
-                MovieRow(
-                  title: 'Popular on Netflix',
-                  movies: _controller.popularMovies,
-                ),
-                MovieRow(
-                  title: 'Trending Now',
-                  movies: _controller.trendingMovies,
-                ),
-                MovieRow(
-                  title: 'Top 10 in Nigeria Today',
-                  movies: _controller.top10Movies,
-                  ranked: true,
-                ),
-                MovieRow(title: 'My List', movies: _controller.myListMovies),
-                MovieRow(
-                  title: 'African Movies',
-                  movies: _controller.africanMovies,
-                ),
-                MovieRow(
-                  title: 'Hollywood Movies & TV',
-                  movies: _controller.hollywoodMovies,
-                ),
-                MovieRow(
-                  title: 'Netflix Originals',
-                  movies: _controller.netflixOriginals,
-                ),
-                MovieRow(
-                  title: 'Watch It Again',
-                  movies: _controller.watchAgainMovies,
-                ),
-                MovieRow(
-                  title: 'New Releases',
-                  movies: _controller.newReleaseMovies,
-                ),
-                MovieRow(
-                  title: 'TV Thrillers & Mysteries',
-                  movies: _controller.tvThrillers,
-                ),
-                MovieRow(title: 'US TV Shows', movies: _controller.usTvShows),
-                const SizedBox(height: 20),
-              ],
-            ),
+          final c = homeController;
+          return ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              HeroCarousel(movies: c.nowPlayingMovies),
+              const HomeLabelWidget('Previews'),
+              PreviewsRow(movies: c.nowPlayingMovies),
+              const HomeLabelWidget('Continue Watching for Onyeka'),
+              ContinueWatchingRow(movies: c.nowPlayingMovies.reversed.toList()),
+              MovieRow(title: 'Popular on Netflix', movies: c.popularMovies),
+              MovieRow(title: 'Trending Now', movies: c.trendingMovies),
+              MovieRow(
+                title: 'Top 10 in Nigeria Today',
+                movies: c.top10Movies,
+                ranked: true,
+              ),
+              MovieRow(title: 'My List', movies: c.myListMovies),
+              MovieRow(title: 'African Movies', movies: c.africanMovies),
+              MovieRow(title: 'Hollywood Movies & TV', movies: c.hollywoodMovies),
+              MovieRow(title: 'Netflix Originals', movies: c.netflixOriginals),
+              MovieRow(title: 'Watch It Again', movies: c.watchAgainMovies),
+              MovieRow(title: 'New Releases', movies: c.newReleaseMovies),
+              MovieRow(title: 'TV Thrillers & Mysteries', movies: c.tvThrillers),
+              MovieRow(title: 'US TV Shows', movies: c.usTvShows),
+              const SizedBox(height: 20),
+            ],
           );
         },
       ),
-      bottomNavigationBar:  HomeBottomNav(),
+      bottomNavigationBar: HomeBottomNav(controller: navigationController),
     );
   }
 }

@@ -1,4 +1,4 @@
-import 'package:court_click/presentation/screens/bloc/home/home_states.dart';
+import 'package:court_click/presentation/bloc/home/home_states.dart';
 import 'package:flutter/material.dart';
 
 void characterStateHandler(

@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:court_click/data/repositories/home_repository.dart';
-import 'package:court_click/presentation/screens/bloc/home/home_events.dart';
-import 'package:court_click/presentation/screens/bloc/home/home_initial_state.dart';
-import 'package:court_click/presentation/screens/bloc/home/home_states.dart';
+import 'package:court_click/presentation/bloc/home/home_events.dart';
+import 'package:court_click/presentation/bloc/home/home_initial_state.dart';
+import 'package:court_click/presentation/bloc/home/home_states.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {

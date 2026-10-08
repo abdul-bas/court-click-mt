@@ -1,7 +1,7 @@
-import 'package:court_click/data/datasources/movie_remote_data_source.dart';
+import 'package:court_click/data/data_sources/movie_remote_data_source.dart';
 import 'package:court_click/data/model/charecter_model.dart';
 import 'package:court_click/data/model/movie_model.dart';
-import 'package:court_click/presentation/screens/bloc/home/home_states.dart';
+import 'package:court_click/presentation/bloc/home/home_states.dart';
 
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart';

@@ -16,7 +16,7 @@ class MovieModel {
   factory MovieModel.fromJson(Map<String, dynamic> json) {
     return MovieModel(
       id: json['id'] as int,
-      // movies use "title", TV shows use "name"
+     
       title: (json['title'] ?? json['name'] ?? '') as String,
       overview: json['overview'] as String?,
       posterPath: json['poster_path'] as String?,
