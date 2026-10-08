@@ -146,6 +146,4 @@ A single `Dio` instance (`core/network/dio_client.dart`) with:
 - No unit or bloc tests yet.
 - Share and Remind Me are not connected to the system.
 
-## Download
 
-- APK: _add GitHub Releases or Drive link_
