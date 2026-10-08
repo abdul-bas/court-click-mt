@@ -37,7 +37,7 @@ Search uses `GET /search/multi?query={q}` and Top Searches uses the trending end
 1. Get a free TMDB API key (v3) from https://www.themoviedb.org/settings/api
 2. Clone the repo and install packages:
    ```bash
-   git clone <repo-url>
+   git clone https://github.com/abdul-bas/court-click-mt/blob/main/README.md
    cd court_click
    flutter pub get
    ```
