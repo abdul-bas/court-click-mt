@@ -1,4 +1,4 @@
-# court_click
+# Court Click – Flutter Machine Task
 
 A Netflix-style movie discovery app built with Flutter for the CourtClick Flutter Developer machine test. It follows the supplied Figma design (7 screens) and uses live data from TheMovieDB (TMDB) for three of them.
 
