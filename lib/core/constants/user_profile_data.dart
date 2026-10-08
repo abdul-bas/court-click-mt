@@ -1,4 +1,4 @@
-const List<Map<String, String>> avatarData = [{
+const List<Map<String, String>> userProfileData = [{
   'image':'assets/images/avatars/avatar_blue.jpg',
   'label':'Emenalo'
 },{
@@ -10,5 +10,6 @@ const List<Map<String, String>> avatarData = [{
 },{
   'image':'assets/images/avatars/avatar_kids.jpg',
   'label':'Kids'
+},{
 }
 ];

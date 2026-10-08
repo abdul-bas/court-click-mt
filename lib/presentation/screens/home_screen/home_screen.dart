@@ -1,7 +1,4 @@
 import 'package:court_click/presentation/controllers/home_controllers.dart';
-import 'package:court_click/presentation/bloc/home/home_bloc.dart';
-import 'package:court_click/presentation/bloc/home/home_states.dart';
-import 'package:court_click/core/utils/home_state_handler.dart';
 import 'package:court_click/presentation/controllers/navigation_controller.dart';
 import 'package:court_click/presentation/screens/home_screen/widgets/bottom_bavigation.dart';
 import 'package:court_click/presentation/screens/home_screen/widgets/continue_watching_row.dart';
@@ -10,7 +7,7 @@ import 'package:court_click/presentation/screens/home_screen/widgets/home_label.
 import 'package:court_click/presentation/screens/home_screen/widgets/movie_row.dart';
 import 'package:court_click/presentation/screens/home_screen/widgets/previews_row.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({
     super.key,

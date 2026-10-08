@@ -19,7 +19,7 @@ class _UserNameScreenState extends State<UserNameScreen> {
     Future.delayed(const Duration(seconds: 5), () {
       if (!mounted) return;
 
-      Navigator.pushNamed(context, '/home');
+      Navigator.pushNamed(context, '/main');
     });
   }
 
@@ -48,7 +48,7 @@ class _UserNameScreenState extends State<UserNameScreen> {
                   children: [
                     //Avatar Grid
                     avatarGrid(),
-                    SizedBox(height: 30),
+                    
                     //Add  Brofile Button
                     profileButton(), SizedBox(),
                   ],

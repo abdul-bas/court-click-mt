@@ -1,4 +1,4 @@
-import 'package:court_click/core/utils/search_state_handlers.dart';
+import 'package:court_click/core/utils/handlers/search_state_handlers.dart';
 import 'package:court_click/presentation/controllers/navigation_controller.dart';
 import 'package:court_click/presentation/controllers/search_controller.dart';
 import 'package:court_click/presentation/screens/home_screen/widgets/bottom_bavigation.dart';

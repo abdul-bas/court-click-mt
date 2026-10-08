@@ -1,3 +1,4 @@
+import 'package:court_click/presentation/controllers/comming_soon_controller.dart';
 import 'package:court_click/presentation/controllers/home_controllers.dart';
 import 'package:court_click/presentation/controllers/navigation_controller.dart';
 import 'package:court_click/presentation/controllers/search_controller.dart';
@@ -36,18 +37,18 @@ final List<Map<String, dynamic>> navigationItems = [
     'activeIcon': Icons.video_library,
     'label': 'Coming Soon',
     'badge': 4,
-    'navigation': (NavigationController controller) => ComingSoonScreen(),
+    'navigation': (NavigationController controller,ComingSoonController comingSoonController ) => ComingSoonScreen(navigationController: controller,comingSoonController:comingSoonController ,),
   },
   {
     'icon': Icons.file_download_outlined,
     'activeIcon': Icons.file_download,
     'label': 'Downloads',
-    'navigation': (NavigationController controller) => DowloadScreen(),
+    'navigation': (NavigationController controller) => DownloadsScreen(navigationController: controller,),
   },
   {
     'icon': Icons.menu,
     'activeIcon': Icons.menu,
     'label': 'More',
-    'navigation': (NavigationController controller) => MoreScreen(),
+    'navigation': (NavigationController controller) => MoreScreen(navigationController: controller,),
   },
 ];
