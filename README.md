@@ -1,122 +1,152 @@
 # court_click
 
-A Netflix-style streaming app UI built with Flutter, using the TMDB API, `flutter_bloc` and clean folder separation.
+A Netflix-style movie discovery app built with Flutter for the CourtClick Flutter Developer machine test. It follows the supplied Figma design (7 screens) and uses live data from TheMovieDB (TMDB) for three of them.
 
-## Screens (7)
+## Screens
 
-| # | Screen | Folder | Data |
-|---|--------|--------|------|
-| 1 | Splash | `screens/splash_screen` | Static |
-| 2 | Username / Profiles | `screens/user_name_screen` | Static |
-| 3 | Home | `screens/home_screen` | TMDB: now playing, popular, trending, top 10, African, Hollywood, Originals, thrillers, US TV |
-| 4 | Search | `screens/search_screen` | TMDB `/search/multi`, 400 ms debounce, Top Searches |
-| 5 | Coming Soon | `screens/coming_soon_screen` | TMDB `/movie/upcoming` |
-| 6 | Downloads | `screens/dowload_screen` | Static |
-| 7 | More | `screens/more_screen` | Static |
+| # | Screen | Data source | Notes |
+|---|--------|-------------|-------|
+| 1 | Splash | Mock | Static |
+| 2 | User name / profiles | Mock | Static |
+| 3 | Home (Dashboard) | **API** | Hero carousel, Previews, Continue Watching and horizontal rails |
+| 4 | Search | **API** | Debounced (400 ms) live search, Top Searches when empty |
+| 5 | Coming Soon | **API** | Upcoming movies with release dates and artwork |
+| 6 | Downloads | Mock | Static, matches design |
+| 7 | More | Mock | Static, matches design |
 
-`screens/main_screen` is the shell that holds tabs 3 to 7 behind the bottom navigation bar (`IndexedStack`, so each tab keeps its state).
+`main_screen` is the shell for tabs 3 to 7. It uses an `IndexedStack`, so each tab keeps its state when switching.
 
-## Project structure
+### API-driven rails on Home
+
+| Rail | Endpoint |
+|------|----------|
+| Hero / Previews / Continue Watching | `GET /movie/now_playing` |
+| Popular on Netflix | `GET /movie/popular` |
+| Trending Now | `GET /trending/all/week` |
+| Top 10 in Nigeria Today | `GET /discover/movie?region=NG` |
+| African Movies, Hollywood Movies & TV | `GET /discover/movie` (origin country filters) |
+| Netflix Originals, TV Thrillers, US TV Shows | `GET /discover/tv` |
+| Watch It Again | `GET /tv/top_rated` (placeholder) |
+| My List | `GET /movie/top_rated` (placeholder) |
+| New Releases | `GET /movie/upcoming` |
+
+Search uses `GET /search/multi?query={q}` and Top Searches uses the trending endpoint. Coming Soon uses `GET /movie/upcoming`.
+
+## Setup
+
+1. Get a free TMDB API key (v3) from https://www.themoviedb.org/settings/api
+2. Clone the repo and install packages:
+   ```bash
+   git clone <repo-url>
+   cd court_click
+   flutter pub get
+   ```
+3. Run the app and pass the key at run time. The key is **not** stored in the source code:
+   ```bash
+   flutter run --dart-define=TMDB_API_KEY=your_key_here
+   ```
+
+   Or keep it in a file that git ignores. Create `env.json` in the project root:
+   ```json
+   { "TMDB_API_KEY": "your_key_here" }
+   ```
+   then run:
+   ```bash
+   flutter run --dart-define-from-file=env.json
+   ```
+   `env.json` is listed in `.gitignore`.
+
+## Build the APK
+
+```bash
+flutter build apk --release --split-per-abi --dart-define-from-file=env.json
+```
+
+Output: `build/app/outputs/flutter-apk/app-arm64-v8a-release.apk`
+
+The key must be passed to the release build as well, otherwise the app has no data.
+
+For the Play Store bundle:
+```bash
+flutter build appbundle --release --dart-define-from-file=env.json
+```
+
+## Architecture
 
 ```
 lib/
 ├── core/
-│   ├── constants/      api_key, genres, bottom_navigation_bar_items, ...
-│   ├── network/        dio_client.dart
+│   ├── constants/      api_key (config), genres, bottom nav items
+│   ├── network/        dio_client (single Dio instance)
 │   ├── routes/         app_router, app_routes
 │   ├── theme/          app_colors, app_theme, text_styles
 │   └── utils/          date_utils, handlers, helpers
 ├── data/
-│   ├── data_sources/   movie_remote_data_source, search_data_source,
-│   │                   commin_soon_data_sorces
-│   ├── model/          movie_model, charecter_model
-│   └── repositories/   home_repository, search_repository,
-│                       coming_soon_repository
+│   ├── data_sources/   remote data sources (Dio calls only)
+│   ├── model/          typed models with fromJson
+│   └── repositories/   turn responses into bloc states
 ├── presentation/
-│   ├── bloc/           home/, search/, coming_soon/
-│   ├── controllers/    navigation_controller, home_controllers,
-│   │                   search_controller, comming_soon_controller
-│   ├── screens/        (the 7 screens above + main_screen)
-│   └── widgets/        avatar_widgets.dart
+│   ├── bloc/           home, search, coming_soon
+│   ├── controllers/    ChangeNotifier caches and navigation
+│   ├── screens/        one folder per screen, with its own widgets
+│   └── widgets/        shared widgets
 └── main.dart
 ```
 
+Data flow for the API screens:
+
+```
+Screen -> Bloc event -> Repository -> Data source (Dio) -> TMDB
+Screen <- Bloc state <- Repository (typed models)
+```
+
+- **Data source**: only makes the HTTP call.
+- **Repository**: parses JSON into `MovieModel`, handles `DioException` and returns a state (`Loaded`, `Empty` or `Error`).
+- **Bloc**: one event per request, emits `Loading` then the repository result.
+- **UI**: no raw `Map` access. Screens only use typed models.
+
 ## State management
 
-- **Bloc** fetches data (`HomeBloc`, `SearchBloc`, `ComingSoonBloc`).
-- **Controllers** (`ChangeNotifier`) cache results and drive the UI, and are created once in `MainScreen` so data survives tab switches.
-- Providers for all blocs live in `main.dart`, above `MainScreen`.
+`flutter_bloc` is used for all API screens. Each flow emits distinct states:
 
-## Setup
+`Initial -> Loading -> Loaded | Empty | Error`
 
-```bash
-flutter pub get
-flutter run
-```
+- **Search** uses `bloc_concurrency`'s `restartable()` with a 400 ms delay, so only the latest keystroke triggers a request.
+- Each API screen shows a loading spinner, an error message with a **Try again** button, and an empty state ("No results").
+- Small `ChangeNotifier` controllers hold UI state (selected tab, cached rail data, reminders) so data survives tab switches.
 
-Dependencies: `flutter_bloc`, `bloc_concurrency`, `dio`, `carousel_slider`.
+## Networking
 
-Add your TMDB key in `lib/core/constants/api_key.dart`.
-Do not commit a real key. Rotate it if it was ever shared publicly.
+A single `Dio` instance (`core/network/dio_client.dart`) with:
+- Base URL, 15 s connect and receive timeouts
+- Default `api_key` and `language` query parameters
+- A logging interceptor in debug builds only
+- Errors caught in repositories and mapped to error states
 
-## Build the app bundle (to download / upload to Play Store)
+## Packages
 
-### 1. Create a signing key (once)
+| Package | Use |
+|---------|-----|
+| `flutter_bloc` | State management |
+| `bloc_concurrency` | Debounce / restartable search |
+| `dio` | HTTP client |
+| `cached_network_image` | Cached posters with placeholder and fallback |
+| `carousel_slider` | Home hero carousel |
 
-```bash
-keytool -genkey -v -keystore %USERPROFILE%\upload-keystore.jks ^
-  -keyalg RSA -keysize 2048 -validity 10000 -alias upload
-```
+## Assumptions
 
-### 2. Create `android/key.properties`
+- The design names screens by tab, so I treated Splash, User name, Home, Search, Coming Soon, Downloads and More as the 7 screens.
+- "Top 10 in Nigeria", "My List" and "Watch It Again" have no matching TMDB endpoint. Top 10 uses the Nigerian region filter, and the other two use top-rated placeholders.
+- The Coming Soon design shows "Season 1" text. `/movie/upcoming` returns movies, so cards show "Coming <date>" instead.
+- Reminders and Share on Coming Soon are UI only. Reminders are kept in memory.
+- Models live in `data/model` and are used directly by the presentation layer.
 
-```properties
-storePassword=YOUR_PASSWORD
-keyPassword=YOUR_PASSWORD
-keyAlias=upload
-storeFile=C:/Users/YOUR_NAME/upload-keystore.jks
-```
+## Not done / known limitations
 
-Add `key.properties` and `*.jks` to `.gitignore`.
-
-### 3. Build
-
-```bash
-flutter clean
-flutter pub get
-flutter build appbundle --release
-```
-
-Output:
-
-```
-build/app/outputs/bundle/release/app-release.aab
-```
-
-### Need a file you can install directly on a phone?
-
-An `.aab` is for the Play Store and can't be installed by tapping it. For a downloadable install file, build an APK:
-
-```bash
-flutter build apk --release --split-per-abi
-```
-
-Output (use the `arm64-v8a` one for most phones):
-
-```
-build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-```
+- No pagination or infinite scroll yet.
+- No unit or bloc tests yet.
+- Share and Remind Me are not connected to the system.
 
 ## Download
 
-Upload the `.aab` / `.apk` to a GitHub Release or Google Drive and put the link here:
-
-- Android app bundle: _add link_
-- Android APK: _add link_
-
-## Notes
-
-- "My List" and "Watch It Again" use placeholder TMDB data until a real user store exists.
-- Remind Me on Coming Soon is stored in memory only.
-- Internet permission must be in `android/app/src/main/AndroidManifest.xml`:
-  `<uses-permission android:name="android.permission.INTERNET"/>`
+- APK: _add GitHub Releases or Drive link_
