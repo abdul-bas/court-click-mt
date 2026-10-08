@@ -128,7 +128,6 @@ A single `Dio` instance (`core/network/dio_client.dart`) with:
 | Package | Use |
 |---------|-----|
 | `flutter_bloc` | State management |
-| `bloc_concurrency` | Debounce / restartable search |
 | `dio` | HTTP client |
 | `cached_network_image` | Cached posters with placeholder and fallback |
 | `carousel_slider` | Home hero carousel |
