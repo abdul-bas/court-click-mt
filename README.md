@@ -140,10 +140,6 @@ A single `Dio` instance (`core/network/dio_client.dart`) with:
 - Reminders and Share on Coming Soon are UI only. Reminders are kept in memory.
 - Models live in `data/model` and are used directly by the presentation layer.
 
-## Not done / known limitations
 
-
-- No unit or bloc tests yet.
-- Share and Remind Me are not connected to the system.
 
 
